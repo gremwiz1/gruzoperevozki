@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Modal } from 'antd';
+import { Modal, Select } from 'antd';
 import type { Order } from '@/@types';
 import styles from './OrderDetailModal.module.css';
 
@@ -44,19 +44,20 @@ export const OrderDetailModal = ({ order, open, onClose }: OrderDetailModalProps
       <div className={styles.content}>
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Статус</h3>
-          <select
+          <Select
             className={styles.select}
             value={order.status}
-            onChange={e => {
+            onChange={value => {
               // Здесь можно добавить логику обновления статуса
-              console.log('Status changed:', e.target.value);
+              console.log('Status changed:', value);
             }}
+            style={{ width: '100%' }}
           >
-            <option value="Не обработана">Не обработана</option>
-            <option value="В обработке">В обработке</option>
-            <option value="Архивирована">Архивирована</option>
-            <option value="Выполнена">Выполнена</option>
-          </select>
+            <Select.Option value="Не обработана">Не обработана</Select.Option>
+            <Select.Option value="В обработке">В обработке</Select.Option>
+            <Select.Option value="Архивирована">Архивирована</Select.Option>
+            <Select.Option value="Выполнена">Выполнена</Select.Option>
+          </Select>
         </div>
 
         <div className={styles.section}>

@@ -44,17 +44,12 @@
 }
 
 .select {
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  font-size: 14px;
   width: 100%;
   max-width: 300px;
 }
 
-.select:focus {
-  outline: none;
-  border-color: #40a9ff;
+.select :global(.ant-select-selector) {
+  border-radius: 4px !important;
 }
 
 .cargoList {

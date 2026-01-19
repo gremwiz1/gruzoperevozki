@@ -15,6 +15,7 @@ export const Orders = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1440);
 
   const fetchOrders = async (page: number) => {
     setLoading(true);
@@ -33,6 +34,15 @@ export const Orders = () => {
 
   useEffect(() => {
     fetchOrders(1);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1440);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handlePageChange = (page: number) => {
@@ -149,17 +159,69 @@ export const Orders = () => {
           </div>
         )}
         <Spin spinning={loading}>
-          <Table
-            columns={columns}
-            dataSource={orders}
-            rowKey="id"
-            pagination={false}
-            onRow={record => ({
-              onClick: () => handleRowClick(record),
-              style: { cursor: 'pointer' },
-            })}
-            scroll={{ x: 1200 }}
-          />
+          {isMobile ? (
+            <div className={styles.cardsContainer}>
+              {orders.map(order => (
+                <div
+                  key={order.id}
+                  className={styles.orderCard}
+                  onClick={() => handleRowClick(order)}
+                >
+                  <div className={styles.cardHeader}>
+                    <span className={styles.cardId}>ID: {order.id}</span>
+                    <span className={styles.cardDate}>{formatDate(order.createdat)}</span>
+                  </div>
+                  <div className={styles.cardBody}>
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Откуда:</span>
+                      <span className={styles.cardValue}>{order.json.fromAddress}</span>
+                    </div>
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Куда:</span>
+                      <span className={styles.cardValue}>{order.json.toAddress}</span>
+                    </div>
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Клиент:</span>
+                      <span className={styles.cardValue}>{order.json.name}</span>
+                    </div>
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Телефон:</span>
+                      <span className={styles.cardValue}>{order.json.phoneNumber}</span>
+                    </div>
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Email:</span>
+                      <span className={styles.cardValue}>{order.json.email}</span>
+                    </div>
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Статус:</span>
+                      <span className={styles.cardValue}>{order.status || '-'}</span>
+                    </div>
+                  </div>
+                  <div className={styles.cardActions}>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={e => handleDeleteOrder(e, order.id)}
+                      type="button"
+                    >
+                      Удалить заявку
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={orders}
+              rowKey="id"
+              pagination={false}
+              onRow={record => ({
+                onClick: () => handleRowClick(record),
+                style: { cursor: 'pointer' },
+              })}
+              scroll={{ x: 1200 }}
+            />
+          )}
         </Spin>
       </div>
       {selectedOrder && (
