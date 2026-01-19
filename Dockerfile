@@ -1,34 +1,30 @@
-# Многоступенчатая сборка
-FROM node:20-alpine AS builder
+# syntax=docker/dockerfile:1
 
-# Установка рабочей директории
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Копирование файлов зависимостей
-COPY package.json ./
+# 1) Копируем манифесты зависимостей (и lock!)
+COPY package.json package-lock.json* ./
 
-# Установка зависимостей с кэшированием
-RUN npm install --frozen-lockfile || npm install
+# 2) Ставим зависимости 
+RUN npm ci
 
-# Копирование исходного кода
+# 3) Копируем исходники
 COPY . .
 
-# Сборка приложения
+# 4) Прокидываем VITE_* на этапе build, если нужно "зашить" env в сборку
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+# 5) Сборка
 RUN npm run build
 
-# Продакшен образ
 FROM node:20-alpine AS runner
-
 WORKDIR /app
 
-# Установка serve для статики
-RUN npm install -g serve
+RUN npm i -g serve
 
-# Копирование собранного приложения из builder
 COPY --from=builder /app/dist ./dist
 
-# Открытие порта
 EXPOSE 8080
-
-# Запуск сервера
 CMD ["serve", "-s", "dist", "-l", "8080"]
