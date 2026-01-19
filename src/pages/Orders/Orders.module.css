@@ -27,16 +27,33 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.statusBadge {
-  font-size: 13px;
-  font-weight: 500;
+.statusText {
+  font-size: 14px;
+  color: #333;
 }
 
-.paginationContainer {
+.deleteButton {
+  padding: 6px 12px;
+  background-color: #f5f5f5;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.deleteButton:hover {
+  background-color: #e6f7ff;
+  border-color: #40a9ff;
+  color: #1890ff;
+}
+
+.paginationTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -44,6 +61,26 @@
 .paginationInfo {
   font-size: 14px;
   color: #666;
+}
+
+/* Стили для активной страницы в пагинации - красная кнопка */
+.pagination :global(.ant-pagination-item-active) {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  font-weight: 500;
+}
+
+.pagination :global(.ant-pagination-item-active a) {
+  color: #fff !important;
+}
+
+.pagination :global(.ant-pagination-item-active:hover) {
+  background-color: #ff7875 !important;
+  border-color: #ff7875 !important;
+}
+
+.pagination :global(.ant-pagination-item-active:hover a) {
+  color: #fff !important;
 }
 
 @media (max-width: 768px) {
@@ -59,7 +96,7 @@
     font-size: 20px;
   }
 
-  .paginationContainer {
+  .paginationTop {
     flex-direction: column;
     align-items: flex-start;
   }

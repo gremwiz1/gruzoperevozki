@@ -3,7 +3,6 @@ import { Table, Pagination, Spin, message, Breadcrumb } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { apiClient } from '@/lib/api';
 import { formatDate } from '@/utils/formatters';
-import { ORDER_STATUS_COLORS } from '@/constants';
 import { OrderDetailModal } from '@/components/OrderDetailModal';
 import type { Order } from '@/@types';
 import styles from './Orders.module.css';
@@ -48,6 +47,12 @@ export const Orders = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+  };
+
+  const handleDeleteOrder = (e: React.MouseEvent, orderId: number) => {
+    e.stopPropagation(); // Предотвращаем открытие модалки при клике на кнопку
+    // TODO: Реализовать удаление заявки
+    console.log('Delete order:', orderId);
   };
 
   const columns: ColumnsType<Order> = [
@@ -99,18 +104,20 @@ export const Orders = () => {
       dataIndex: 'status',
       key: 'status',
       width: 150,
-      render: (status: string) => (
-        <span
-          className={styles.statusBadge}
-          style={{
-            backgroundColor: ORDER_STATUS_COLORS[status] || '#f0f0f0',
-            padding: '4px 12px',
-            borderRadius: '4px',
-            display: 'inline-block',
-          }}
+      render: (status: string) => <span className={styles.statusText}>{status || '-'}</span>,
+    },
+    {
+      title: 'Действия',
+      key: 'actions',
+      width: 150,
+      render: (_: unknown, record: Order) => (
+        <button
+          className={styles.deleteButton}
+          onClick={e => handleDeleteOrder(e, record.id)}
+          type="button"
         >
-          {status}
-        </span>
+          Удалить заявку
+        </button>
       ),
     },
   ];
@@ -125,6 +132,22 @@ export const Orders = () => {
         <h1 className={styles.title}>Заявки с сайта</h1>
       </div>
       <div className={styles.tableContainer}>
+        {!loading && totalItems > 0 && (
+          <div className={styles.paginationTop}>
+            <Pagination
+              current={currentPage}
+              total={totalItems}
+              pageSize={itemsPerPage}
+              onChange={handlePageChange}
+              showSizeChanger={false}
+              className={styles.pagination}
+            />
+            <div className={styles.paginationInfo}>
+              Показано {(currentPage - 1) * itemsPerPage + 1}-
+              {Math.min(currentPage * itemsPerPage, totalItems)} из {totalItems} записей
+            </div>
+          </div>
+        )}
         <Spin spinning={loading}>
           <Table
             columns={columns}
@@ -138,21 +161,6 @@ export const Orders = () => {
             scroll={{ x: 1200 }}
           />
         </Spin>
-        {!loading && totalItems > 0 && (
-          <div className={styles.paginationContainer}>
-            <div className={styles.paginationInfo}>
-              Показано {(currentPage - 1) * itemsPerPage + 1}-
-              {Math.min(currentPage * itemsPerPage, totalItems)} из {totalItems} записей
-            </div>
-            <Pagination
-              current={currentPage}
-              total={totalItems}
-              pageSize={itemsPerPage}
-              onChange={handlePageChange}
-              showSizeChanger={false}
-            />
-          </div>
-        )}
       </div>
       {selectedOrder && (
         <OrderDetailModal order={selectedOrder} open={isModalOpen} onClose={handleCloseModal} />

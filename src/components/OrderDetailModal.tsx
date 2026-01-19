@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Modal } from 'antd';
-import { formatOrderJson } from '@/utils/formatters';
 import type { Order } from '@/@types';
 import styles from './OrderDetailModal.module.css';
 
@@ -168,11 +167,6 @@ export const OrderDetailModal = ({ order, open, onClose }: OrderDetailModalProps
               </div>
             </div>
           )}
-        </div>
-
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Полные данные (JSON)</h3>
-          <pre className={styles.json}>{formatOrderJson(order.json)}</pre>
         </div>
       </div>
     </Modal>
